@@ -1,9 +1,11 @@
 import React, { useState } from 'react'
 import InputField from '../components/InputField'
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const Login: React.FC = () => {
 
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
 
@@ -16,6 +18,7 @@ const Login: React.FC = () => {
                 password,
             });
             const token = res.data.token;
+            localStorage.setItem("token", token);
             console.log(token);
             alert("Login success");
             
@@ -29,7 +32,7 @@ const Login: React.FC = () => {
 
   return (
     <div className='flex justify-center items-center h-screen bg-gray-500'>
-        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2'>
+        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2 rounded-2xl'>
             <h1 className='text-4xl font-bold text-center mb-4'>Login</h1>
 
             <InputField type='email' placeholder='email' label='email' value={email} onChange={(e) => setEmail(e.target.value)} />
@@ -42,6 +45,7 @@ const Login: React.FC = () => {
             >
                 Login
             </button>
+            <a className='cursor-pointer' type='submit' onClick={() => navigate("/signup")}>create account</a>
         </form>
     </div>
   )

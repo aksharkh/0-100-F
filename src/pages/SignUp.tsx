@@ -1,10 +1,13 @@
 import React, { useState } from 'react'
 import InputField from '../components/InputField';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+
 
 
 const SignUp: React.FC = () => {
 
+    const navigate = useNavigate();
     const [userName, setUserName] = useState("");
     const [email, setEmail] = useState("");
     const [role, setRole] = useState("USER");
@@ -37,7 +40,7 @@ const SignUp: React.FC = () => {
 
   return (
     <div className='flex justify-center items-center h-screen bg-gray-500'>
-        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2'>
+        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2 rounded-2xl'>
             <h2 className='text-4xl font-bold text-center mb-4'>Sign Up</h2>
 
             <InputField placeholder='username' label='Username' type='text' value={userName} onChange={(e) => setUserName(e.target.value)} />
@@ -48,6 +51,7 @@ const SignUp: React.FC = () => {
             <button type='submit' className='w-full h-10 rounded-xl bg-blue-600 cursor-pointer' onClick={handleSignup}>
                 Sign Up
             </button>
+            <a type='submit' className='cursor-pointer' onClick={() => navigate("/login")}> have account Login</a>
         </form>
     </div>
   )
