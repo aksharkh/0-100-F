@@ -18,7 +18,7 @@ type EmployeeDto = {
 const Employees: React.FC = () => {
 
     const [employees, setEmployees] = useState<EmployeeDto[]>([]);
-    const [page, setpage] = useState<number>(1);
+    const [page, setpage] = useState<number>(0);
 
     async function fetchEmployees() {
         const res = await axios.get(`/employees?page=${page}&size=20`);
