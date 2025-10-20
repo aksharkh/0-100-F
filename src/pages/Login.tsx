@@ -1,54 +1,67 @@
-import React, { useState } from 'react'
-import InputField from '../components/InputField'
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import InputField from "../components/InputField";
+import { useNavigate } from "react-router-dom";
+import { Button, Form, message, Typography } from "antd";
+import api from "../services/api";
+
+const { Title } = Typography;
 
 const Login: React.FC = () => {
 
-    const navigate = useNavigate();
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+  const navigate = useNavigate();
 
-    const handleLogin = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const res = await axios.post("http://localhost:8080/api/auth/login",{
-                email,
-                password,
-            });
-            const token = res.data.token;
-            localStorage.setItem("token", token);
-            console.log(token);
-            alert("Login success");
-            
-        } catch (error) {
-            alert("Login failed");
-            console.log(error);
-            
-        }
-    };
-
+  const handleLogin = async (values: { email: string; password: string }) => {
+    try {
+      const res = await api.post("/auth/login", values);
+      localStorage.setItem("token", res.data.token);
+      message.success("Login successful!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      message.error(error.response?.data?.message || "Login failed");
+    }
+  };
 
   return (
-    <div className='flex justify-center items-center h-screen bg-gray-500'>
-        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2 rounded-2xl'>
-            <h1 className='text-4xl font-bold text-center mb-4'>Login</h1>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className=" bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <Title level={2} className="text-center mb-6">
+          Login
+        </Title>
+        <Form name="loginForm" layout="vertical" onFinish={handleLogin}>
+          <InputField
+            name="email"
+            label="Email"
+            type="email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+                message: "Please input a valid email!",
+              },
+            ]}
+          />
+          <InputField
+            name="password"
+            label="Password"
+            type="password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          />
 
-            <InputField type='email' placeholder='email' label='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-            <InputField type='text' placeholder='password' label='password' value={password} onChange={(e) => setPassword(e.target.value)} />
-
-            <button
-            type='submit'
-            className='w-full h-10 rounded-xl bg-blue-600 cursor-pointer'
-            onClick={handleLogin}
-            >
-                Login
-            </button>
-            <a className='cursor-pointer' type='submit' onClick={() => navigate("/signup")}>create account</a>
-        </form>
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Login
+            </Button>
+          </Form.Item>
+        </Form>
+        <div className="text-center mt-4">
+          <span> Don't have an account?</span>
+          <Button type="link" onClick={() => navigate("/signup")}>
+            Sign up
+          </Button>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

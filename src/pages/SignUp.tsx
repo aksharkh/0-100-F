@@ -1,60 +1,83 @@
-import React, { useState } from 'react'
-import InputField from '../components/InputField';
-import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import React, { useState } from "react";
+import InputField from "../components/InputField";
+import { useNavigate } from "react-router-dom";
+import { Button, Form, message, Typography } from "antd";
+import api from "../services/api";
 
-
+const { Title } = Typography;
 
 const SignUp: React.FC = () => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate();
-    const [userName, setUserName] = useState("");
-    const [email, setEmail] = useState("");
-    const [role, setRole] = useState("USER");
-    const [password, setPassword] = useState("");
-
-
-    const handleSignup = async (e: React.FormEvent) => {
-        e.preventDefault();
-
-        try {
-            const res = await axios.post("http://localhost:8080/api/auth/signup",{
-                userName,
-                email,
-                role,
-                password,
-            }
-            );
-            alert("signup done");
-            console.log(res);
-            
-            
-        } catch (error) {
-            alert("signup failed");
-            console.log(error);;
-            
-        }
-        
+  const handleSignup = async (values: {
+    userName: string;
+    email: string;
+    role: string;
+    password: string;
+  }) => {
+    try {
+      const res = await api.post("/auth/signup", values);
+      message.success("Signup successful!");
+      navigate("/dashboard");
+    } catch (error: any) {
+      message.error(error.response?.data?.message || "Signup failed");
     }
-
+  };
 
   return (
-    <div className='flex justify-center items-center h-screen bg-gray-500'>
-        <form className='bg-white w-1/2 h-3/4 p-4 flex flex-col gap-2 rounded-2xl'>
-            <h2 className='text-4xl font-bold text-center mb-4'>Sign Up</h2>
-
-            <InputField placeholder='username' label='Username' type='text' value={userName} onChange={(e) => setUserName(e.target.value)} />
-            <InputField placeholder='email' label='Email' type='email' value={email} onChange={(e) => setEmail(e.target.value)} />
-            <InputField placeholder='USER' label='Role' type='text' value={role} onChange={(e) => setRole(e.target.value)} />
-            <InputField placeholder='password' label='password' type='text' value={password} onChange={(e) => setPassword(e.target.value)} />
-
-            <button type='submit' className='w-full h-10 rounded-xl bg-blue-600 cursor-pointer' onClick={handleSignup}>
-                Sign Up
-            </button>
-            <a type='submit' className='cursor-pointer' onClick={() => navigate("/login")}> have account Login</a>
-        </form>
+    <div className="flex justify-center items-center h-screen bg-gray-100">
+      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+        <Title level={2} className="text-center mb-6">
+          Sign Up
+        </Title>
+        <Form name="signupForm" layout="vertical" onFinish={handleSignup}>
+          <InputField
+            name="userName"
+            label="Username"
+            placeholder="Enter your username"
+            rules={[{ required: true, message: "Please input your username!" }]}
+          />
+          <InputField
+            name="email"
+            label="Email"
+            type="email"
+            placeholder="Enter your email"
+            rules={[
+              {
+                required: true,
+                type: "email",
+                message: "Please input valid email",
+              },
+            ]}
+          />
+          <InputField
+            name="role"
+            label="Role"
+            placeholder="Enter role"
+            rules={[{ required: true, message: "Please input your role!" }]}
+          />
+          <InputField
+            name="password"
+            label="Password"
+            type="password"
+            placeholder="Enter your password"
+            rules={[{ required: true, message: "Please input your password!" }]}
+          />
+          <Form.Item>
+            <Button type="primary" htmlType="submit" block>
+              Sign Up
+            </Button>
+          </Form.Item>
+        </Form>
+        <div className="text-center mt-4">
+          <span>Already have an account? </span>
+          <Button type="link" onClick={() => navigate("/login")}>
+            Login
+          </Button>
+        </div>
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default SignUp
+export default SignUp;

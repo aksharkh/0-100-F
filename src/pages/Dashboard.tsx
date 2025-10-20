@@ -1,41 +1,39 @@
-import React, { useState } from 'react'
+import { Card, message } from 'antd';
+import React, { useEffect, useState } from 'react'
+import api from '../services/api';
 
 
-type AttendanceDto ={
-    id: number;
-    date: string;
-    punchInTime?: string;
-    punchOutTime?:string;
-    durationMinutes?: number;
-    employeeId: number;
-    employeeCode:string;
+interface Stats{
+    totalEmployees:number;
+    totalAttendanceToday:number;
 }
+
 const Dashboard: React.FC = () => {
 
-    const [emploeeId, setEmployeeId] = useState<number>(() => Number(localStorage.getItem("employeeId") || 1));
-    const today = new Date();
-    const [year, setyear] = useState(today.getFullYear());
-    const [mont, setMonth] = useState(today.getMonth()+1);
-    const [attendance, setAttendance] = useState<AttendanceDto[]>([]);
+    const [stats, setStats] = useState<Stats>({totalEmployees:0, totalAttendanceToday:0});
 
+    const fetchStats = async () => {
+        try {
+            const res = await api.get("/dashboard/stats");
+            setStats(res.data);
+        } catch (error: any) {
+            message.error(error.response?.data?.message || "Failed to fetch stats");
+            
+        }
+    }
 
+    useEffect(() => {
+        fetchStats();
+    },[]);
 
   return (
     <div className='p-6'>
-        <div className='flex justify-between items-center mb-4'>
-            <h1 className='text-xl font-bold'> Dashboard</h1>
-            <div>
-                <select value={emploeeId} onChange={(e)=> setEmployeeId(Number(e.target.value))} className='mr-4 border p-1 rounded'>
-                    <option value={1}>Employee 1</option>
-                    <option value={2}>Employee 2</option>
+        <h1 className='text-2xl font-bold mb-6'>Dashboard</h1>
+        <div className='grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6'>
+            <Card title="Total Employees" className='shadow-md'>{stats.totalEmployees}</Card>
+            <Card title="Attendance Today" className='shadow-md'>{stats.totalAttendanceToday}</Card>
 
-                </select>
-
-                <button >Prev</button>
-                <button >Next</button>
-            </div>
         </div>
-
     </div>
   )
 }
